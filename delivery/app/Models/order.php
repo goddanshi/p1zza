@@ -5,8 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class order extends Model
+class Order extends Model
 {
     use HasFactory;
-    protected $fillable = ['name_order', 'phone_order', 'adress', 'comment', 'total_price'];
+
+    protected $fillable = [
+        'nameOrder', 'phone', 'address', 'korzina'
+    ];
+
+    protected $casts = [
+        'korzina' => 'array', // Преобразуем поле korzina в массив
+    ];
 }
