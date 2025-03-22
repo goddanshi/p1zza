@@ -14,24 +14,24 @@ class OrderController extends Controller
     
         return response()->json($orders->map(function ($order) {
             $orderData = $order->toArray();
-            $korzina = json_decode($order->korzina, true);
+            $korzina = json_decode($order->korzina, true); //Декодинг в ассоциативный массив
     
             if (!is_array($korzina)) {
-                $korzina = [];
+                $korzina = []; //Создаю пустой массив если данные невалидны
             }
     
             $orderData['korzina'] = array_map(function ($item) {
                 $pizza = Pizza::find($item['pizza_id']);
                 return [
-                    'pizza_id' => $item['pizza_id'],
-                    'name' => $pizza ? $pizza->name : 'Неизвестная пицца',
-                    'opisanie' => $pizza ? $pizza->opisanie : 'Описание отсутствует',
+                    'id' => $item['pizza_id'],
+                    'Name' => $pizza ? $pizza->name : 'Неизвестная пицца',
+                    'composition' => $pizza ? $pizza->opisanie : 'Описание отсутствует',
                     'quantity' => $item['quantity'],
-                    'price' => $pizza ? $pizza->price : 0,
-                    'total_price' => $pizza ? $pizza->price * $item['quantity'] : 0
+                    'Price' => $pizza ? $pizza->price : 0,
+                    'Total price' => $pizza ? $pizza->price * $item['quantity'] : 0
                 ];
             }, $korzina);
-    
+            $orderData['Total price:'] = array_sum(array_column($orderData['korzina'], 'Total price'));
             return $orderData;
         }));
     }
