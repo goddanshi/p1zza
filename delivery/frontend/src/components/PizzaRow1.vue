@@ -30,7 +30,7 @@
         <div class="image-container">
             <img :src="asorti" alt="Pizza" />
             <p class="image-caption">Асорти</p> 
-            <p class="image-description">Тесто для пиццы, ветчина, бекон, маслины, помидоры, перец свежий, сыр моцарелла, соус фирменный, филе куриное.</p><br>
+            <p class="image-description">Тесто для пиццы, ветчина, бекон, маслины, помидоры, перец свежий, сыр моцарелла, соус фирменный, филе куриное.</p>
             <p class="image-price">770 р.</p>
             <button class="image-button">Заказать</button>
         </div>
@@ -38,7 +38,7 @@
         <div class="image-container">
             <img :src="greze" alt="Пепперони">
             <p class="image-caption">Греческая</p> 
-            <p class="image-description">Тесто для пиццы, соус фирменный, лук красный, маслины, помидоры, сыр брынза, пекинская капуста, зелень, перец болгарский, сыр моцарелла.</p>
+            <p class="image-description">Тесто для пиццы, соус фирменный, лук, маслины, помидоры, брынза, пекинская капуста, зелень, перец болгарский, сыр моцарелла.</p>
             <p class="image-price">630 р.</p>
             <button class="image-button">Заказать</button>
         </div>
@@ -46,7 +46,7 @@
         <div class="image-container">
             <img :src="teriyaki" alt="Маргарита">
              <p class="image-caption">Цыпленок Терияки</p> 
-            <p class="image-description">Тесто для пиццы, соус ранч, сыр моцарелла, куриное филе, огурцы свежие, соус терияки.</p><br> <!-- br Для правильного отступа -->
+            <p class="image-description">Тесто для пиццы, соус ранч, помидоры, сыр моцарелла, куриное филе, огурцы свежие, соус терияки.</p><br> <!-- br Для правильного отступа -->
             <p class="image-price">680 р.</p>
             <button class="image-button">Заказать</button>
         </div>
