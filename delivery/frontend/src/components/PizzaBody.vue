@@ -1,7 +1,7 @@
 <template>
 <div class="body">
     <div class="nadpis"><p>Пицца на любой ваш вкус</p></div>
-    <div class="pizzas1">
+    <div class="pizzas-container1">
         <div class="image-container">
             <img :src="vetchinaikurica" alt="Pizza" />
             <p class="image-caption">Ветчина и курица</p> 
@@ -9,15 +9,36 @@
             <p class="image-price">660 р.</p>
             <button class="image-button">Заказать</button>
         </div>
+        
+        <div class="image-container">
+            <img :src="peperoni" alt="Пепперони">
+            <p class="image-caption">Пепперони</p> 
+            <p class="image-description">Тесто для пиццы, соус фирменный, сыр моцарелла, салями оригинальная.</p>
+            <p class="image-price">600 р.</p>
+            <button class="image-button">Заказать</button>
+        </div>
+
+        <div class="image-container">
+            <img :src="margharita" alt="Маргарита">
+             <p class="image-caption">Маргарита</p> <br> <!-- br Для правильного отступа -->
+            <p class="image-description">Тесто для пиццы, соус фирменный, сыр моцарелла, помидоры.</p>
+            <p class="image-price">490 р.</p>
+            <button class="image-button">Заказать</button>
+        </div>
     </div>
 </div>
+
 </template>
 <script>
     import vetchinaikurica from '@/assets/Vetchinaikurica-280x280.jpg';
+    import peperoni from '@/assets/Peperoni.jpg';
+    import margharita from '@/assets/Margharita.jpg';
     export default { 
         data(){
         return {
-        vetchinaikurica  //Создание свойства чтоб работала локальная фотка (Иначе выводил alt..)
+        margharita,
+        peperoni,
+        vetchinaikurica, //Создание свойства чтоб работала локальная фотка (Иначе выводил alt..)
     };
   }
 }
@@ -33,16 +54,19 @@
     text-align: center;
     font-size: 50px;
 }
-.pizzas1 {
-  display: flex; 
-  justify-content: space-between; 
+.pizzas-container1 {
+  display: flex;  
+  justify-content: center; 
+  gap: 40px; 
   padding: 20px;
+  flex-wrap: wrap; 
 }
 .image-container {
   display: flex;
-  flex-direction: column; 
-  align-items: center; 
-  padding-left: 60px;
+  flex-direction: column;
+  align-items: center;
+  width: 300px; 
+  text-align: center;
 }
 .image-caption {
   margin-top: 10px; 
