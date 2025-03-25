@@ -42,51 +42,28 @@
     <div v-if="isCheckoutVisible" class="modal-checkout">
     <div class="modal-content">
       <h2>Оформление заказа</h2>
-      <form @submit.prevent="submitForm">
+      <form @submit.prevent="submitOrder">
         <div class="form-group">
-          <label for="name">ФИО</label>
-          <input
-            type="text"
-            id="name"
-            v-model="form.name"
-            :class="{'error': errors.name}"
-            placeholder="Введите ФИО"
-          />
-          <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
+          <label for="fullName">ФИО</label>
+          <input type="text" id="fullName" v-model="fullName" placeholder="Введите ФИО" :class="{'error': errors.fullName}" />
+          <span v-if="errors.fullName" class="error-message">{{ errors.fullName }}</span>
         </div>
         <div class="form-group">
           <label for="address">Адрес доставки</label>
-          <input
-            type="text"
-            id="address"
-            v-model="form.address"
-            :class="{'error': errors.address}"
-            placeholder="Введите адрес доставки"
-          />
+          <input type="text" id="address" v-model="address" placeholder="Введите адрес доставки"  :class="{'error': errors.address}" />
           <span v-if="errors.address" class="error-message">{{ errors.address }}</span>
         </div>
         <div class="form-group">
-          <label for="phone">Номер телефона</label>
-          <input
-            type="text"
-            id="phone"
-            v-model="form.phone"
-            :class="{'error': errors.phone}"
-            placeholder="Введите номер телефона"
-          />
+          <label for="phone">Телефон</label>
+          <input type="text" id="phone" v-model="phone" placeholder="Введите номер телефона" :class="{'error': errors.phone}" />
           <span v-if="errors.phone" class="error-message">{{ errors.phone }}</span>
         </div>
         <div class="form-group">
           <label for="comment">Комментарий</label>
-          <textarea
-            id="comment"
-            v-model="form.comment"
-            :class="{'error': errors.comment}"
-            placeholder="Ваши комментарии"
-          ></textarea>
+          <textarea id="comment" v-model="comment" placeholder="Введите комментарий" :class="{'error': errors.comment}" ></textarea>
         </div>
-        <button type="submit" :disabled="!isFormValid" @click="submitOrder()">Оформить заказ</button>
-        <button @click="closeModal">Закрыть</button>
+        <button type="submit">Оформить заказ</button>
+        <button class="closer" @click="toggleCheckout">Закрыть</button>
       </form>
     </div>
   </div>
@@ -100,23 +77,22 @@ import margharita from "../assets/Margharita.jpg";
 import asorti from "../assets/Asorti.jpg";
 import greze from "../assets/Greze.jpg";
 import tireyaki from "../assets/Tireyaki.jpg";
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      form: {
-        name: '',
-        address: '',
-        phone: '',
-        comment: '',
-      },
+      fullName: "",
+      address: "",
+      phone: "",
+      comment: "",
+      isCheckoutVisible: false, // Флаг видимости модального окна
       errors: {
-        name: null,
+        fullName: null,
         address: null,
         phone: null,
         comment: null,
       },
-      isCheckoutVisible: false, // Флаг видимости модального окна
       pizzas: [
         { name: "Ветчина и курица", image: vetchinaikurica, description: "Тесто, соус сливочный, сыр моцарелла, куриное филе, ветчина, помидоры.", price: 660 },
         { name: "Пепперони", image: peperoni, description: "Тесто, соус фирменный, сыр моцарелла, салями оригинальная.", price: 600 },
@@ -130,47 +106,74 @@ export default {
     };
   },
   computed: {
-    isFormValid() {
-      return this.form.name && this.form.address && this.form.phone && Object.values(this.errors).every(error => error === null);
-    },
     totalPrice() {
       return this.cart.reduce((sum, pizza) => sum + pizza.price * pizza.quantity, 0);
     },
     totalQuantity(){
       return this.cart.reduce((total, pizza) => total + pizza.quantity, 0);
     },
+    isFormValid() {
+      return this.fullName && this.address && this.phone && Object.values(this.errors).every((error) => error === null);
+    },
   },
   methods: {
-    submitForm() {
-      this.validateForm();
-      if (this.isFormValid) {
-        alert('Заказ оформлен');
-        this.$emit('close'); // Закрытие модального окна после оформления заказа
-      }
-    },
-    validateForm() {
-      this.errors = {}; // Очищаем ошибки перед валидацией
-      if (!this.form.name) {
-        this.errors.name = 'Введите ФИО';
-      }
-      if (!this.form.address) {
-        this.errors.address = 'Введите адрес доставки';
-      }
-      if (!this.form.phone || /^\d{11}$/.test(this.form.phone)) {
-        this.errors.phone = 'Введите корректный номер телефона (11 цифр)';
-      }else {
-          this.errors.phone = ''; 
-        }
-    },
-    closeModal() {
-      this.$emit('close');
-    },
     toggleCheckout() {
       this.isCheckoutVisible = !this.isCheckoutVisible;
     },
     submitOrder() {
-      alert("Заказ оформлен!");
-      this.isCheckoutVisible = false;
+      this.validateForm();
+      if (this.isFormValid) {
+        this.isCheckoutVisible = false;
+        }
+          const orderData = {
+          fullName: this.fullName,
+          address: this.address,
+          phone: this.phone,
+          comment: this.comment,
+          cart: this.cart, // можно добавить корзину, если она необходима
+        };
+          axios.post('http://127.0.0.1:8000/api/orders', orderData)
+          .then(response => {// Обработка успешного ответа от сервера
+              console.log('Заказ успешно отправлен', response.data);
+              this.isCheckoutVisible = false; // Закрываем форму
+              this.cart = [];
+              })
+          .catch(error => {// Обработка ошибки, если что-то пошло не так
+            console.error('Ошибка при отправке заказа:', error);});
+    },
+    validateForm() {
+      // Очистка ошибок перед валидацией
+      this.errors = {
+        fullName: null,
+        address: null,
+        phone: null,
+        comment: null,
+      };
+      // Валидация ФИО
+      if (!this.fullName) {
+        this.errors.fullName = "Введите ФИО";
+      } else if (!/^[a-zA-Zа-яА-Я\s]+$/.test(this.fullName)) {
+        this.errors.fullName = "ФИО должно содержать только буквы";
+      }
+
+      // Валидация адреса
+      if (!this.address) {
+        this.errors.address = "Введите адрес доставки";
+          } else if (this.address.length < 7) {
+            this.errors.address = "Адрес должен содержать минимум 7 символов";
+          }
+
+      // Валидация телефона
+      if (!this.phone) {
+        this.errors.phone = "Введите номер телефона";
+      } else if (!/^\+?\d{10,15}$/.test(this.phone)) {
+        this.errors.phone = "Номер телефона должен содержать от 10 до 15 цифр, включая код страны";
+      }
+
+      // Валидация комментариев (необязательное поле)
+      if (this.comment && this.comment.length > 500) {
+        this.errors.comment = "Комментарий не должен превышать 500 символов";
+      }
     },
     toggleCart() {
       this.isCartVisible = !this.isCartVisible;
@@ -200,7 +203,6 @@ export default {
   }
     },
     checkout() {
-      console.log("Заказ оформлен")
       this.cart = [];
       this.isCartVisible = false;
     }
@@ -208,6 +210,13 @@ export default {
 };
 </script>  
 <style>
+.error {
+  border: 1px solid red;
+}
+.error-message {
+  color: red;
+  font-size: 12px;
+}
 .modal-checkout {
   position: fixed;
   top: 0;
