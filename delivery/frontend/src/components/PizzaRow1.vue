@@ -57,7 +57,7 @@ export default {
       pizzas: [
         { name: "Ветчина и курица", image: vetchinaikurica, description: "Тесто, соус сливочный, сыр моцарелла, куриное филе, ветчина, помидоры.", price: 660 },
         { name: "Пепперони", image: peperoni, description: "Тесто, соус фирменный, сыр моцарелла, салями оригинальная.", price: 600 },
-        { name: "Маргарита", image: margharita, description: "Тесто, соус фирменный, сыр моцарелла, помидоры.", price: 490 },
+        { name: "Маргарита", image: margharita, description: "Тесто, соус фирменный, сыр моцарелла, помидоры.", price: 590 },
         { name: "Ассорти", image: asorti, description: "Тесто, ветчина, бекон, маслины, помидоры, перец, сыр моцарелла, соус фирменный, филе куриное.", price: 770 },
         { name: "Греческая", image: greze, description: "Тесто, соус фирменный, лук, маслины, помидоры, брынза, пекинская капуста, зелень, перец, сыр моцарелла.", price: 630 },
         { name: "Цыпленок Терияки", image: tireyaki, description: "Тесто, соус ранч, помидоры, сыр моцарелла, куриное филе, огурцы, соус терияки.", price: 680 }
@@ -165,25 +165,19 @@ export default {
   font-size: 50px;
 }
 .pizzas-container1 {
-display: flex;  
-justify-content: center; 
-gap: 40px; 
-padding: 20px;
-flex-wrap: wrap; 
-}
-.pizzas-container2 {
-display: flex;  
-justify-content: center; 
-gap: 40px; 
-padding: 20px;
-flex-wrap: wrap; 
+  display: grid;
+  grid-template-columns: repeat(3, 30vw); 
+  gap: 20px;
+  text-align: center;
+  padding-bottom: 10px;
+  justify-content: center;
 }
 .image-container {
-display: flex;
-flex-direction: column;
-align-items: center;
-width: 300px; 
-text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 100%; /* Ограничиваем ширину контейнера */
 }
 .image-caption {
 margin-top: 10px; 
@@ -219,6 +213,11 @@ font-weight: bold;
 }
 #opac{
   opacity: 50%;
+  font-size: 20px;
+  position: absolute;
+  top: 103.3%;
+  left: 71%;
+  
 }
 .cart{
   position: fixed;
