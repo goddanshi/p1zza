@@ -15,12 +15,11 @@
         <button class="image-button" @click="addToCart(pizza)">Заказать</button>
       </div>
     </div>
-
     <!-- Модальное окно корзины -->
     <div v-if="isCartVisible" class="modal-cart">
           <h2 id="korzina">Корзина</h2>
           <div class="knopki">
-              <button class="checkout" v-if="cart.length > 0" @click="checkout">Оформить заказ</button>
+              <button class="checkout" v-if="cart.length > 0" @click=toggleCheckout()>Оформить заказ</button>
               <button class="deleteAll" v-if="cart.length > 0" @click="removeAll()">Очистить корзину</button>
           </div>
       <div class="modal-content">
@@ -36,10 +35,35 @@
         </ul>
         <p v-else>Ваша корзина пуста</p><br>
         <p>Сумма: {{ totalPrice }} р.</p>
-        
         <button class="closer" @click="toggleCart">✖</button>
       </div>
     </div>
+<!-- Модальное окно формы -->
+    <div v-if="isCheckoutVisible" class="modal-checkout">
+    <div class="modal-content">
+      <h2>Оформление заказа</h2>
+      <form @submit.prevent="submitOrder">
+        <div class="form-group">
+          <label for="fullName">ФИО</label>
+          <input type="text" id="fullName" v-model="fullName" placeholder="Введите ФИО" required />
+        </div>
+        <div class="form-group">
+          <label for="address">Адрес доставки</label>
+          <input type="text" id="address" v-model="address" placeholder="Введите адрес доставки" required />
+        </div>
+        <div class="form-group">
+          <label for="phone">Телефон</label>
+          <input type="text" id="phone" v-model="phone" placeholder="Введите номер телефона" required />
+        </div>
+        <div class="form-group">
+          <label for="comment">Комментарий</label>
+          <textarea id="comment" v-model="comment" placeholder="Введите комментарий"></textarea>
+        </div>
+        <button type="submit">Оформить заказ</button>
+        <button class="closer" @click="toggleCheckout">Закрыть</button>
+      </form>
+    </div>
+  </div>
   </div>
 </template>
 
@@ -54,6 +78,11 @@ import tireyaki from "../assets/Tireyaki.jpg";
 export default {
   data() {
     return {
+      fullName: "",
+      address: "",
+      phone: "",
+      comment: "",
+      isCheckoutVisible: false, // Флаг видимости модального окна
       pizzas: [
         { name: "Ветчина и курица", image: vetchinaikurica, description: "Тесто, соус сливочный, сыр моцарелла, куриное филе, ветчина, помидоры.", price: 660 },
         { name: "Пепперони", image: peperoni, description: "Тесто, соус фирменный, сыр моцарелла, салями оригинальная.", price: 600 },
@@ -75,6 +104,15 @@ export default {
     },
   },
   methods: {
+    toggleCheckout() {
+      this.isCheckoutVisible = !this.isCheckoutVisible;
+    },
+    submitOrder() {
+      // Логика для отправки заказа
+      alert("Заказ оформлен!");
+      this.isCheckoutVisible = false;
+      // Здесь можно добавить логику для отправки заказа на сервер
+    },
     toggleCart() {
       this.isCartVisible = !this.isCartVisible;
     },
@@ -110,6 +148,35 @@ export default {
 };
 </script>  
 <style>
+.modal-checkout {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 .modal-cart {
   position: fixed;
   top: 0;
