@@ -86,6 +86,7 @@ export default {
       address: "",
       phone: "",
       comment: "",
+      cart: [], // Корзина
       isCheckoutVisible: false, // Флаг видимости модального окна
       errors: {
         fullName: null,
@@ -101,7 +102,6 @@ export default {
         { name: "Греческая", image: greze, description: "Тесто, соус фирменный, лук, маслины, помидоры, брынза, пекинская капуста, зелень, перец, сыр моцарелла.", price: 630 },
         { name: "Цыпленок Терияки", image: tireyaki, description: "Тесто, соус ранч, помидоры, сыр моцарелла, куриное филе, огурцы, соус терияки.", price: 680 }
       ],
-      cart: [], // Корзина
       isCartVisible: false // Флаг показа корзины
     };
   },
@@ -121,26 +121,30 @@ export default {
       this.isCheckoutVisible = !this.isCheckoutVisible;
     },
     submitOrder() {
-      this.validateForm();
-      if (this.isFormValid) {
-        this.isCheckoutVisible = false;
-        }
-          const orderData = {
-          fullName: this.fullName,
-          address: this.address,
-          phone: this.phone,
-          comment: this.comment,
-          cart: this.cart, // можно добавить корзину, если она необходима
-        };
-          axios.post('http://127.0.0.1:8000/api/orders', orderData)
-          .then(response => {// Обработка успешного ответа от сервера
-              console.log('Заказ успешно отправлен', response.data);
-              this.isCheckoutVisible = false; // Закрываем форму
-              this.cart = [];
-              })
-          .catch(error => {// Обработка ошибки, если что-то пошло не так
-            console.error('Ошибка при отправке заказа:', error);});
-    },
+  const orderData = {
+    fullName: this.fullName,    // Имя клиента
+    address: this.address,      // Адрес
+    phone: this.phone,          // Телефон
+    comment: this.comment,      // Комментарий
+    cart: this.cart.map(pizza => ({ // Массив пицц из корзины
+      name: pizza.name,
+      price: pizza.price,
+      quantity: pizza.quantity
+    }))
+  };
+
+  console.log('Данные заказа:', orderData);
+
+  axios.post('http://127.0.0.1:8000/api/orders', orderData)
+    .then(response => {
+      console.log('Заказ отправлен:', response);
+      alert('Ваш заказ успешно отправлен!');
+    })
+    .catch(error => {
+      console.error('Ошибка при отправке заказа:', error);
+      alert('Ошибка при отправке заказа');
+    });
+},
     validateForm() {
       // Очистка ошибок перед валидацией
       this.errors = {

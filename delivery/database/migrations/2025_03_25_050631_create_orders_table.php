@@ -6,28 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateOrdersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('nameOrder');
-            $table->string('phone');
+            $table->string('full_name');
             $table->string('address');
-            $table->json('korzina'); // Храним корзину как JSON
+            $table->string('phone');
+            $table->text('comment')->nullable();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('orders');

@@ -4,16 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Pizza;
 
 class Order extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'nameOrder', 'phone', 'address', 'korzina'
+        'full_name', 'address', 'phone', 'comment'
     ];
 
-    protected $casts = [
-        'korzina' => 'array', // Преобразуем поле korzina в массив
-    ];
+    public function pizzas()
+{
+    return $this->hasMany(Pizza::class);
+}
 }

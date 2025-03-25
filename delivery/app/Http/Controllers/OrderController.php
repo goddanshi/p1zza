@@ -1,59 +1,59 @@
 <?php
-
 namespace App\Http\Controllers;
-use App\Models\Order;
 use App\Models\Pizza;
+use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    // Получение всех заказов
-    public function index()
-    {
-        $orders = Order::all();
-    
-        return response()->json($orders->map(function ($order) {
-            $orderData = $order->toArray();
-            $korzina = json_decode($order->korzina, true); //Декодинг в ассоциативный массив
-    
-            if (!is_array($korzina)) {
-                $korzina = []; //Создаю пустой массив если данные невалидны
-            }
-    
-            $orderData['korzina'] = array_map(function ($item) {
-                $pizza = Pizza::find($item['pizza_id']);
-                return [
-                    'id' => $item['pizza_id'],
-                    'Name' => $pizza ? $pizza->name : 'Неизвестная пицца',
-                    'composition' => $pizza ? $pizza->opisanie : 'Описание отсутствует',
-                    'quantity' => $item['quantity'],
-                    'Price' => $pizza ? $pizza->price : 0,
-                    'Total price' => $pizza ? $pizza->price * $item['quantity'] : 0
-                ];
-            }, $korzina);
-            $orderData['Total price:'] = array_sum(array_column($orderData['korzina'], 'Total price'));
-            return $orderData;
-        }));
-    }
-    // Создание нового заказа
     public function store(Request $request)
     {
+        Log::info('Новый заказ', ['order' => $request->all()]);
+        
         // Валидация данных
-        $validated = $request->validate([
-            'nameOrder' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+        $request->validate([
+            'fullName' => 'required|string|max:255',
             'address' => 'required|string|max:255',
-            'korzina' => 'required|array',
-            'korzina.*.pizza_id' => 'required|integer',  // Пицца должна быть в корзине
-            'korzina.*.quantity' => 'required|integer|min:1',
-        ]);
-        $order = Order::create([
-            'nameOrder' => $validated['nameOrder'],
-            'phone' => $validated['phone'],
-            'address' => $validated['address'],
-            'korzina' => json_encode($validated['korzina']), // Сохраняем корзину как JSON
+            'phone' => 'required|string|max:20',
+            'comment' => 'nullable|string',
+            'cart' => 'required|array',
+            'cart.*.name' => 'required|string',
+            'cart.*.price' => 'required|numeric',
+            'cart.*.quantity' => 'required|integer|min:1',
         ]);
 
-        return response()->json($order, 201);
+        try {
+            // Создаем заказ
+            $order = Order::create([
+                'full_name' => $request->fullName,
+                'address' => $request->address,
+                'phone' => $request->phone,
+                'comment' => $request->comment,
+            ]);
+
+            // Создаем пиццы в заказе
+            foreach ($request->cart as $pizza) {
+                $order->pizzas()->create([  // Предполагается, что у вас есть связь pizzas() в модели Order
+                    'name' => $pizza['name'],
+                    'price' => $pizza['price'],
+                    'quantity' => $pizza['quantity'],
+                ]);
+            }
+
+            return response()->json(['message' => 'Заказ успешно создан!'], 201);
+        } catch (\Exception $e) {
+            // Логируем ошибку
+            Log::error('Ошибка при создании заказа: ' . $e->getMessage());
+            return response()->json(['error' => 'Произошла ошибка на сервере'], 500);
+        }
     }
+
+    public function index()
+{
+    // Загружаем все заказы с их связанными пиццами
+    $orders = Order::with('pizzas')->get();  // Используем метод with для жадной загрузки
+
+    return response()->json($orders);
+}
 }

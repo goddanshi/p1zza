@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/pizzas',[PizzaController::class, 'index']);
-// Route::post('/orders', [OrderController::class, 'store']);
+
 Route::get('orders', [OrderController::class, 'index']);
-Route::post('orders', [OrderController::class, 'store']);
+Route::post('/orders', [OrderController::class, 'store']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
