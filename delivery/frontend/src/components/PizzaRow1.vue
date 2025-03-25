@@ -121,6 +121,13 @@ export default {
       this.isCheckoutVisible = !this.isCheckoutVisible;
     },
     submitOrder() {
+      this.validateForm(); // Вызываем валидацию перед отправкой
+
+  // Проверяем, есть ли ошибки в форме
+  if (Object.values(this.errors).some(error => error !== null)) {
+    console.log("Форма содержит ошибки:", this.errors);
+    return; // Если есть ошибки, прерываем отправку
+  }
   const orderData = {
     fullName: this.fullName,    // Имя клиента
     address: this.address,      // Адрес
